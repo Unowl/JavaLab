@@ -1,0 +1,97 @@
+CREATE TABLE teachers(
+    teacher_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL);
+
+CREATE TABLE subjects(
+    subject_id SERIAL PRIMARY KEY,
+    name VARCHAR(30) NOT NULL);
+
+CREATE TABLE reading(
+    teacher_id SERIAL,
+    subject_id SERIAL,
+    day VARCHAR(30) NOT NULL,
+    room INT NOT NULL,
+    st_num INT CHECK(st_num >= 1),
+    les_num INT CHECK(st_num >= 1)
+    FOREIGN KEY(teacher_id)
+    REFERENCES teachers(teacher_id)
+    FOREIGN KEY(subject_id)
+    REFERENCES subjects(subject_id)
+);
+
+CREATE TABLE reading(
+    teacher_id SERIAL REFERENCES teachers (teacher_id),
+    subject_id SERIAL REFERENCES subjects (subject_id),
+    day VARCHAR(30) NOT NULL,
+    room INT NOT NULL,
+    st_num INT,
+    les_num INT
+);
+
+SELECT * FROM teachers;
+SELECT * FROM reading;
+SELECT * FROM subjects;
+
+INSERT INTO reading (teacher_id, subject_id, day, room, st_num, les_num)
+VALUES 
+('1', '51', 'Sun', 111, 10, 1),
+('2', '52', 'Mon', 111, 10, 3),
+('3', '53', 'Tue', 111, 10, 1),
+('4', '54', 'Wen', 112, 11, 4),
+('5', '55', 'Sat', 112, 11, 2),
+('6', '56', 'Fri', 114, 11, 1),
+('7', '57', 'Sat', 114, 11, 1),
+('8', '58', 'Sun', 115, 11, 1),
+('9', '59', 'Mon', 116, 12, 2),
+('10', '60', 'Wen', 117, 12, 3),
+('11', '61', 'Fri', 117, 12, 4),
+('12', '62', 'Tue', 117, 12, 5),
+('13', '51', 'Mon', 117, 12, 1),
+('14', '52', 'Sun', 120, 15, 1),
+('15', '53', 'Sat', 120, 15, 1),
+('16', '54', 'Tue', 120, 15, 6),
+('17', '55', 'Fri', 120, 15, 3),
+('18', '56', 'Sun', 120, 15, 2),
+('19', '57', 'Sat', 120, 15, 1),
+('20', '58', 'Wen', 121, 16, 1);
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+SELECT * FROM teachers JOIN reading ON teachers.teacher_id = reading.teacher_id
+WHERE reading.day = 'Mon' AND reading.room = 111;
+
+SELECT * FROM subjects JOIN (teachers JOIN reading ON teachers.teacher_id = reading.teacher_id
+WHERE reading.day = 'Mon' AND reading.room = 111) ON subjects.subject_id = (teachers JOIN reading ON teachers.teacher_id = reading.teacher_id
+WHERE reading.day = 'Mon' AND reading.room = 111).subject_i;
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #1
+SELECT teachers.name, subjects.name, reading.day,
+       reading.room, reading.st_num, reading.les_num
+    FROM teachers, subjects, reading
+    WHERE teachers.teacher_id = reading.teacher_id
+    AND subjects.subject_id = reading.subject_id
+    AND reading.day = 'Sun'
+    AND reading.room = 120;
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #2
+SELECT teachers.name, subjects.name, reading.day,
+       reading.room, reading.st_num, reading.les_num
+    FROM teachers, subjects, reading
+    WHERE teachers.teacher_id = reading.teacher_id
+    AND subjects.subject_id = reading.subject_id
+    AND reading.day != 'Sun';
+
+SELECT SUM (les_num) AS total
+FROM reading
+WHERE day = 'Sun';
+
+SELECT * FROM 
+(SELECT reading.day, SUM(les_num)
+FROM reading
+GROUP BY reading.day) AS tmp WHERE sum = 8;
+   
+
+INSERT INTO subjects (subject_id, name) VALUES ('51', 'maths'), ('52', 'chemistry'), ('53', 'physics'), ('54', 'literature'), ('55', 'biology'), ('56', 'history'), ('57', 'English'), ('58', 'social science'), ('59', 'PC'), ('60', 'economy'), ('61', 'geography'), ('62', 'drawing');
+
+INSERT INTO teachers (teacher_id, name) VALUES ('1', 'Davis Freddie'), ('2', 'Matthews Sean'), ('3', 'Wright Stephen'), ('4', 'Ross Ava'), ('5', 'Cox Harley'), ('6', 'Roberts Lewis'), ('7', 'Murphy Patricia'), ('8', 'Mason Oscar'), ('9', 'Hunt Benjamin'), ('10', 'Rose Phoebe'), ('11', 'Jones Helen'), ('12', 'Fox Summer'), ('13', 'Morris Abigail'), ('14', 'Cox Jack'), ('15', 'Chapman Ross'), ('16', 'Khan Damien'), ('17', 'Morgan Faye'), ('18', 'Marshall Liam'), ('19', 'Richards Isobel'), ('20', 'Clarke Molly'), ('21', 'Smith Melissa'), ('22', 'Anderson Mia'), ('23', 'Mitchell Evie'), ('24', 'Walker Zachary'), ('25', 'Cox Carmen'), ('26', 'Martin Amelia'), ('27', 'Davies Abbie'), ('28', 'Price Leo'), ('29', 'Graham Shannon'), ('30', 'Hunt Lily'), ('31', 'Gray Kirsty'), ('32', 'Reynolds Tara'), ('33', 'Scott David'), ('34', 'Davis Jane'), ('35', 'Shaw Alfie'), ('36', 'Reynolds Adele'), ('37', 'Green Dave'), ('38', 'Anderson Lola'), ('39', 'Cooper Thomas'), ('40', 'Ward George'), ('41', 'Ross Graham'), ('42', 'Roberts Julia'), ('43', 'Rogers Elsie'), ('44', 'Walker Michael'), ('45', 'Johnson Julia'), ('46', 'Lloyd Elsie'), ('47', 'Ward Lexi'), ('48', 'Rose Teagan'), ('49', 'Harrison Millie'), ('50', 'Evans Ella');
